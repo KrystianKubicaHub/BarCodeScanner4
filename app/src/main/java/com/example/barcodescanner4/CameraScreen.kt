@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 fun CameraScreen(
     analyzerType: AnalyzerType,
     input_code: MutableState<String>,
+    camera_active: MutableState<Boolean>,
 ){
     val localContext = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -40,7 +41,8 @@ fun CameraScreen(
             val imageAnalysis = ImageAnalysis.Builder().build()
             imageAnalysis.setAnalyzer(
                 ContextCompat.getMainExecutor(context),
-                    BarcodeAnalyzer(context, input_code, analyzerType)
+                    BarcodeAnalyzer(context, input_code, analyzerType, camera_active)
+
             )
 
             runCatching {

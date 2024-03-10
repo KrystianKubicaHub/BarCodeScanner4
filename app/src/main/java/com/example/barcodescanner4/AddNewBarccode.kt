@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -73,7 +72,8 @@ open class AddNewBarcode : ComponentActivity() {
     @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
     @Composable
     open fun Greeting2(modifier: Modifier = Modifier) {
-        val context = LocalContext.current
+
+        val camera_active = remember{ mutableStateOf(false) }
 
         val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
         var analyzerType by remember { mutableStateOf(AnalyzerType.UNDEFINED) }
@@ -130,7 +130,7 @@ open class AddNewBarcode : ComponentActivity() {
 
 
         if (cameraPermissionState.status.isGranted){
-            if (analyzerType == AnalyzerType.UNDEFINED){
+            if (!camera_active.value){
                 Column {
                     Column(
                         verticalArrangement = Arrangement.Top,
@@ -146,7 +146,7 @@ open class AddNewBarcode : ComponentActivity() {
                                         end = Offset(6f, 100.0f)
                                     )
                                 )
-                                .clickable(onClick = { analyzerType = AnalyzerType.BARCODE }),
+                                .clickable(onClick = { analyzerType = AnalyzerType.BARCODE; camera_active.value = true}),
                             horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -411,7 +411,7 @@ open class AddNewBarcode : ComponentActivity() {
                             }
                         } } }}
             else{
-                CameraScreen(analyzerType, input_code)
+                CameraScreen(analyzerType, input_code, camera_active)
             }
         } else if (cameraPermissionState.status.shouldShowRationale) {
             Text("Camera Permission permanently denied")

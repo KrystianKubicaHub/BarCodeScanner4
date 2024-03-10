@@ -15,7 +15,8 @@ import com.google.mlkit.vision.common.InputImage
 class BarcodeAnalyzer(
     private val context: Context,
     private val input_code: MutableState<String>,
-    private var analyzerType: AnalyzerType
+    private var analyzerType: AnalyzerType,
+    private var camera_active: MutableState<Boolean>
 ) : ImageAnalysis.Analyzer {
 
 
@@ -37,10 +38,8 @@ class BarcodeAnalyzer(
                     barcode?.takeIf { it.isNotEmpty() }
                         ?.mapNotNull { it.rawValue }
                         ?.joinToString(",")
-                        ?.let { input_code.value = it;Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                            scanner.close(); analyzerType = AnalyzerType.UNDEFINED; imageProxy.close();
-                            RAM_Database.pass_the_code =  it; context.startActivity(Intent(context, AddNewBarcode::class.java)) }
-
+                        ?.let { input_code.value = it; scanner.close(); analyzerType = AnalyzerType.UNDEFINED;
+                            imageProxy.close(); camera_active.value = false }
                 }.addOnCompleteListener {
                     imageProxy.close()
                 }
