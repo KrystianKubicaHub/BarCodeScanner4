@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">BarCodeScanner4</string>
     <string name="title_activity_add_new_barccode" />
+    <string name="title_activity_check_barcode">CheckBarcode</string>
 </resources>

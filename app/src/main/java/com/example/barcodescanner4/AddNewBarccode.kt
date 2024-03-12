@@ -89,7 +89,6 @@ open class AddNewBarcode : ComponentActivity() {
 
 
     @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class,
-        ExperimentalMaterial3Api::class
     )
     @Composable
     open fun Greeting2(modifier: Modifier = Modifier) {
@@ -224,6 +223,7 @@ open class AddNewBarcode : ComponentActivity() {
                                 icon = { Icon(
                                     painter = painterResource(id = R.drawable.camera50),
                                     contentDescription = "",
+                                    modifier = Modifier.size(40.dp),
                                     tint = color_white)
                                        },
                                 text = { Text(text = text_open_scanner,
@@ -232,7 +232,7 @@ open class AddNewBarcode : ComponentActivity() {
                                     color = color_white) },
                                 containerColor = color_black,
                                 contentColor = color_white,
-                                modifier = Modifier.size(220.dp, 70.dp)
+                                modifier = Modifier.size(220.dp, 60.dp)
                                 )
 
                         }
