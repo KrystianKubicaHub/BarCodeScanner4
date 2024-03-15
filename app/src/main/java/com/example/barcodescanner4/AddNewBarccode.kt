@@ -195,7 +195,8 @@ open class AddNewBarcode : ComponentActivity() {
                                     switchV_easily_segreable.value,
                                     color_selected_container.value.toString(),
                                     input_dumping_description.value,
-                                    error_info
+                                    error_info,
+                                    switchV_required_washing.value
                                 )},
                             icon = { Icon(Icons.Filled.Check, "Extended floating action button.") },
                             text = { Text(text = text_confirm_button) },
@@ -524,17 +525,12 @@ open class AddNewBarcode : ComponentActivity() {
     }
     fun onConfirm(
         code: String, manufacturer: String, product_name: String, switch_state: Boolean,
-        selected_basket: String, description: String, error_info: MutableState<String>
+        selected_basket: String, description: String, error_info: MutableState<String>, washing: Boolean
     ) : Int{ // switch_state == true -> user selected one of the baskets
 
-        if(code.length != 13){
-            error_info.value = "The length of the barcode must be 13"
-            return 0
-        }
-        if(!code.isDigitsOnly()){
-            error_info.value = "Barcode must consist only of numbers"
-            return 0
-        }
+        val Evaluate = EvaluateTheNewCode()
+        error_info.value = Evaluate.barcodeIsOk(code)
+
         if(manufacturer == ""){
             error_info.value = "Enter manufacturer"
             return 0
@@ -548,7 +544,8 @@ open class AddNewBarcode : ComponentActivity() {
             return 0
         }
 
-        val Evaluate = EvaluateTheNewCode(code.toLong())
+
+
         if (Evaluate.check_if_code_in_registry()) {
             7 + 6
         } else {
@@ -560,7 +557,7 @@ open class AddNewBarcode : ComponentActivity() {
                 )
                 barcode = Evaluate.getDataFromBarcode(
                     new_opinion = users_opinion,
-                    required_washing = false
+                    required_washing = washing
                 )!!
 
                 barcode.manufacturer = manufacturer
@@ -580,7 +577,7 @@ open class AddNewBarcode : ComponentActivity() {
                 )
                 barcode = Evaluate.getDataFromBarcode(
                     new_opinion = users_opinion,
-                    required_washing = false
+                    required_washing = washing
                 )!!
 
 

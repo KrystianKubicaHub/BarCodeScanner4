@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.barcodescanner4.ui.theme.BarCodeScanner4Theme
@@ -93,12 +94,22 @@ open class CheckBarcode : ComponentActivity() {
         )
 
         val modifier_button = Modifier.padding(vertical = 15.dp)
+        val context = LocalContext.current
+        val error = remember{ mutableStateOf("") }
 
         Scaffold(
             floatingActionButtonPosition = FabPosition.Center,
             floatingActionButton = {
                 ExtendedFloatingActionButton(
-                    onClick = {},
+                    onClick = {
+                        val Evaluate = EvaluateTheNewCode()
+                        error.value = Evaluate.barcodeIsOk(code.value)
+                        if(Evaluate.check_if_code_in_registry()){
+                            val barcode: Barcode = Evaluate.getBarcodeFromRAM()
+                        }else{
+                            error.value = "Unfortunately, this barcode is not in our registry"
+                        }
+                              },
                     icon = { Icon(Icons.Filled.Check, "Check this barcode in the database") },
                     text = { Text(text = "Check this barcode") },
                     containerColor = color_yellow,
@@ -112,7 +123,6 @@ open class CheckBarcode : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
             ) {
-
                 OutlinedButton(modifier = modifier_button, onClick = {camera.value = true}) {
                     Text(text = "Scan Barcode")
                 }
@@ -126,10 +136,27 @@ open class CheckBarcode : ComponentActivity() {
                     colors = inputs_colors
 
                 )
+                if(error.value != ""){
+                    OutlinedTextField(
+                        value = error.value,
+                        onValueChange = {},
+                        enabled = false,
+                        modifier = Modifier.padding(15.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = Color.Red,
+                            disabledBorderColor = Color.Red
+                        )
+                    )
+                }
 
             }
         }
 
+    }
+
+    private fun onClick(code: String): () -> Unit {
+
+        return ({1+1})
     }
 }
 

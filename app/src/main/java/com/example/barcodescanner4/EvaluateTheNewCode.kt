@@ -2,9 +2,24 @@ package com.example.barcodescanner4
 
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.text.isDigitsOnly
 
-class EvaluateTheNewCode(barcode: Long) {
-    val code = barcode
+class EvaluateTheNewCode(){
+    private var code: Long? = null
+
+
+    fun barcodeIsOk(barcode : String): String{
+        // if function returned null, than code is ok
+        if(barcode.length != 13){
+            return "The length of the barcode must be 13"
+        }
+        if(!barcode.isDigitsOnly()){
+            return "Barcode must consist only of numbers"
+        }
+        code = barcode.toLong()
+        return ""
+
+    }
 
     fun check_if_code_in_registry(): Boolean{
         return if( code in RAM_Database.list_of_barcodes){
@@ -44,16 +59,18 @@ class EvaluateTheNewCode(barcode: Long) {
                 current_list_of_opinions = mutableListOf<OpinionOnThrowingAway>()
             }
 
-            return Barcode(
-                code = code,
-                country_of_origin = country,
-                manufacturer = manufacturer,
-                product_name = productName,
-                opinion_on_throwing_away = current_list_of_opinions,
-                requiresWashing = required_washing)
-        }else{
-            return null
+            if(code != null){
+                return Barcode(
+                    code = code!!,
+                    country_of_origin = country,
+                    manufacturer = manufacturer,
+                    product_name = productName,
+                    opinion_on_throwing_away = current_list_of_opinions,
+                    requiresWashing = required_washing)
+            }
+
         }
+        return null
     }
 
     private fun determineCountryOfOrgin(trinity: Int): String {
@@ -191,8 +208,9 @@ class EvaluateTheNewCode(barcode: Long) {
         }
     }
 
-    fun pushToDatabase(barcode: Barcode?): Boolean {
-        1+6
-        return true
+    fun getBarcodeFromRAM(): Barcode {
+        val op = OpinionOnThrowingAway(descripton = "", kind_of_basket = "")
+        val my_list = listOf(op)
+        return Barcode(0,"","","",my_list,true)
     }
 }
