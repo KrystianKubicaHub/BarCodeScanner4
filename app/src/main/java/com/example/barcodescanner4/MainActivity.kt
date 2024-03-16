@@ -54,6 +54,11 @@ class MainActivity : ComponentActivity() {
 
                 val barcodeDao = db.userDao()
                 val codes: List<Barcode> = barcodeDao.getAll()
+                RAM_Database.barcodes_data.addAll(codes)
+
+                for(c in codes){
+                    RAM_Database.list_of_barcodes.add(c.code)
+                }
                 Toast.makeText(applicationContext, codes.toString(), Toast.LENGTH_LONG).show()
             }
 

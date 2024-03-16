@@ -2,36 +2,25 @@ package com.example.barcodescanner4
 
 import android.Manifest
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.captionBarPadding
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.waterfallPadding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -39,38 +28,35 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
+import androidx.room.Room
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 open class AddNewBarcode : ComponentActivity() {
@@ -93,6 +79,8 @@ open class AddNewBarcode : ComponentActivity() {
     @Composable
     open fun Greeting2(modifier: Modifier = Modifier) {
 
+        val scope = rememberCoroutineScope()
+
         val camera_active = remember{ mutableStateOf(false) }
 
         val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
@@ -112,6 +100,8 @@ open class AddNewBarcode : ComponentActivity() {
         val error_info = remember { mutableStateOf("") }
         val in_which_containter_to_throw =
             remember{ mutableStateOf("In which container should the product be thrown?") }
+
+        val selected_container = remember{ mutableStateOf("")}
 
         val color_white = Color(255,255,255)
         val color_grey = Color(74,76,92)
@@ -187,17 +177,19 @@ open class AddNewBarcode : ComponentActivity() {
                     floatingActionButtonPosition = FabPosition.Center,
                     floatingActionButton = {
                         ExtendedFloatingActionButton(
-                            onClick = {
+                            onClick = { scope.launch{
                                 onConfirm(
                                     input_code.value,
                                     input_manufacturer.value,
                                     input_product_name.value,
                                     switchV_easily_segreable.value,
-                                    color_selected_container.value.toString(),
+                                    selected_container.value,
                                     input_dumping_description.value,
                                     error_info,
-                                    switchV_required_washing.value
-                                )},
+                                    switchV_required_washing.value,
+                                    scope
+                                )
+                            }},
                             icon = { Icon(Icons.Filled.Check, "Extended floating action button.") },
                             text = { Text(text = text_confirm_button) },
                             containerColor = color_yellow,
@@ -377,6 +369,7 @@ open class AddNewBarcode : ComponentActivity() {
                                                 in_which_containter_to_throw.value =
                                                     value_to_be_assigned_5
                                                 color_selected_container.value = Color.Blue
+                                                selected_container.value = "Blue"
                                             }
                                         )
                                         .padding(
@@ -401,6 +394,7 @@ open class AddNewBarcode : ComponentActivity() {
                                                     value_to_be_assigned_6
 
                                                 color_selected_container.value = Color.Yellow
+                                                selected_container.value = "Yellow"
                                             }
                                         )
                                         .padding(
@@ -425,6 +419,7 @@ open class AddNewBarcode : ComponentActivity() {
                                                     value_to_be_assigned_7
 
                                                 color_selected_container.value = Color.Green
+                                                selected_container.value = "Green"
                                             }
                                         )
                                         .padding(
@@ -449,6 +444,7 @@ open class AddNewBarcode : ComponentActivity() {
                                                     value_to_be_assigned_8
 
                                                 color_selected_container.value = Color.Black
+                                                selected_container.value = "Black"
                                             }
                                         )
                                         .padding(
@@ -473,6 +469,7 @@ open class AddNewBarcode : ComponentActivity() {
                                                     value_to_be_assigned_9
 
                                                 color_selected_container.value = Color.Red
+                                                selected_container.value = "Red"
                                             }
                                         )
                                         .padding(
@@ -513,87 +510,114 @@ open class AddNewBarcode : ComponentActivity() {
             }
             Text("No Camera Permission")
         }
-
-
-
-
-
     }
 
-    fun normalizeSizeOfAllIcons(){
 
-    }
-    fun onConfirm(
-        code: String, manufacturer: String, product_name: String, switch_state: Boolean,
-        selected_basket: String, description: String, error_info: MutableState<String>, washing: Boolean
-    ) : Int{ // switch_state == true -> user selected one of the baskets
+    private suspend fun onConfirm(
+        code: String,
+        manufacturer: String,
+        product_name: String,
+        switch_state: Boolean,
+        selected_basket: String,
+        description: String,
+        error_info: MutableState<String>,
+        washing: Boolean,
+        scope: CoroutineScope
+    ){ // switch_state == true -> user selected one of the baskets
 
         val Evaluate = EvaluateTheNewCode()
         error_info.value = Evaluate.barcodeIsOk(code)
 
         if(manufacturer == ""){
             error_info.value = "Enter manufacturer"
-            return 0
-        }
-        if(product_name == ""){
-            error_info.value = "Enter product name"
-            return 0
-        }
-        if(switch_state && selected_basket ==""){
-            error_info.value = "You must select one of the baskets"
-            return 0
-        }
+        }else{
+            if(product_name == ""){
+                error_info.value = "Enter product name"
+            }else{
+                if(switch_state && selected_basket ==""){
+                    error_info.value = "You must select one of the baskets"
+                }else{
+
+                    if (Evaluate.check_if_code_in_registry()) {
+                        error_info.value = "Bar Code is already in register"
+                    } else {
+                        val barcode: Barcode
+                        if (switch_state) {
+                            val users_opinion = OpinionOnThrowingAway(
+                                kind_of_basket = selected_basket,
+                                descripton = null
+                            )
+                            barcode = Evaluate.getDataFromBarcode(
+                                new_opinion = users_opinion,
+                                required_washing = washing
+                            )!!
+
+                            barcode.manufacturer = manufacturer
+                            barcode.product_name = product_name
+
+                            val database =
+                                Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
+                            val myRef = database.getReference("barcodes").child(RAM_Database.list_of_barcodes.size.toString())
+
+                            myRef.setValue(barcode).addOnSuccessListener {
+                                RAM_Database.list_of_barcodes.add(barcode.code)
+                                RAM_Database.barcodes_data.add(barcode)
+
+                                val db = Room.databaseBuilder(
+                                    applicationContext,
+                                    AppDatabase::class.java, "barcodes-database"
+                                ).build()
 
 
-
-        if (Evaluate.check_if_code_in_registry()) {
-            7 + 6
-        } else {
-            val barcode: Barcode
-            if (switch_state) {
-                val users_opinion = OpinionOnThrowingAway(
-                    kind_of_basket = selected_basket,
-                    descripton = null
-                )
-                barcode = Evaluate.getDataFromBarcode(
-                    new_opinion = users_opinion,
-                    required_washing = washing
-                )!!
-
-                barcode.manufacturer = manufacturer
-                barcode.product_name = product_name
-
-                val database =
-                    Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
-                val myRef = database.getReference("barcodes").child(barcode.code.toString())
-
-                myRef.setValue(barcode)
+                                scope.launch {
+                                    val barcodeDao = db.userDao()
+                                    barcodeDao.insertAll(barcode)
+                                }
 
 
-            } else {
-                val users_opinion = OpinionOnThrowingAway(
-                    kind_of_basket = null,
-                    descripton = description
-                )
-                barcode = Evaluate.getDataFromBarcode(
-                    new_opinion = users_opinion,
-                    required_washing = washing
-                )!!
+                            }
 
 
-                barcode.manufacturer = manufacturer
-                barcode.product_name = product_name
+                        } else {
+                            val users_opinion = OpinionOnThrowingAway(
+                                kind_of_basket = null,
+                                descripton = description
+                            )
+                            barcode = Evaluate.getDataFromBarcode(
+                                new_opinion = users_opinion,
+                                required_washing = washing
+                            )!!
 
-                val database =
-                    Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
-                val myRef = database.getReference("barcodes").child(barcode.code.toString())
 
-                myRef.setValue(barcode)
+                            barcode.manufacturer = manufacturer
+                            barcode.product_name = product_name
+
+                            val database =
+                                Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
+                            val myRef = database.getReference("barcodes").child(barcode.code.toString())
+
+                            myRef.setValue(barcode).addOnSuccessListener {
+                                RAM_Database.list_of_barcodes.add(barcode.code)
+                                RAM_Database.barcodes_data.add(barcode)
+
+                                val db = Room.databaseBuilder(
+                                    applicationContext,
+                                    AppDatabase::class.java, "barcodes-database"
+                                ).build()
+
+
+                                scope.launch {
+                                    val barcodeDao = db.userDao()
+                                    barcodeDao.insertAll(barcode)
+                                }
+
+
+                            }
+                        }
+                    }
+                }
             }
-
         }
-
-        return 1
     }
 
     @Preview
