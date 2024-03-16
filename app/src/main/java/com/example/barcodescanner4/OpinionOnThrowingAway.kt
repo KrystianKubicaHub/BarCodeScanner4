@@ -5,7 +5,7 @@ import java.util.Calendar
 
 
 data class OpinionOnThrowingAway(
-    val kind_of_basket: String?,
-    val descripton: String?,
+    val kind_of_basket: String? = null,
+    val descripton: String? = null,
     val date: Long = System.currentTimeMillis()
 )

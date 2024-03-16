@@ -187,7 +187,6 @@ open class AddNewBarcode : ComponentActivity() {
                                     input_dumping_description.value,
                                     error_info,
                                     switchV_required_washing.value,
-                                    scope
                                 )
                             }},
                             icon = { Icon(Icons.Filled.Check, "Extended floating action button.") },
@@ -198,6 +197,7 @@ open class AddNewBarcode : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
+                    val fakepaddking = innerPadding
 
                     Column(
                         verticalArrangement = Arrangement.Top,
@@ -522,7 +522,6 @@ open class AddNewBarcode : ComponentActivity() {
         description: String,
         error_info: MutableState<String>,
         washing: Boolean,
-        scope: CoroutineScope
     ){ // switch_state == true -> user selected one of the baskets
 
         val Evaluate = EvaluateTheNewCode()
@@ -545,7 +544,7 @@ open class AddNewBarcode : ComponentActivity() {
                         if (switch_state) {
                             val users_opinion = OpinionOnThrowingAway(
                                 kind_of_basket = selected_basket,
-                                descripton = null
+                                descripton = ""
                             )
                             barcode = Evaluate.getDataFromBarcode(
                                 new_opinion = users_opinion,
@@ -559,28 +558,10 @@ open class AddNewBarcode : ComponentActivity() {
                                 Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
                             val myRef = database.getReference("barcodes").child(RAM_Database.list_of_barcodes.size.toString())
 
-                            myRef.setValue(barcode).addOnSuccessListener {
-                                RAM_Database.list_of_barcodes.add(barcode.code)
-                                RAM_Database.barcodes_data.add(barcode)
-
-                                val db = Room.databaseBuilder(
-                                    applicationContext,
-                                    AppDatabase::class.java, "barcodes-database"
-                                ).build()
-
-
-                                scope.launch {
-                                    val barcodeDao = db.userDao()
-                                    barcodeDao.insertAll(barcode)
-                                }
-
-
-                            }
-
-
+                            myRef.setValue(barcode)
                         } else {
                             val users_opinion = OpinionOnThrowingAway(
-                                kind_of_basket = null,
+                                kind_of_basket = "",
                                 descripton = description
                             )
                             barcode = Evaluate.getDataFromBarcode(
@@ -594,25 +575,10 @@ open class AddNewBarcode : ComponentActivity() {
 
                             val database =
                                 Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
-                            val myRef = database.getReference("barcodes").child(barcode.code.toString())
+                            val myRef = database.getReference("barcodes").child(RAM_Database.list_of_barcodes.size.toString())
 
-                            myRef.setValue(barcode).addOnSuccessListener {
-                                RAM_Database.list_of_barcodes.add(barcode.code)
-                                RAM_Database.barcodes_data.add(barcode)
+                            myRef.setValue(barcode)
 
-                                val db = Room.databaseBuilder(
-                                    applicationContext,
-                                    AppDatabase::class.java, "barcodes-database"
-                                ).build()
-
-
-                                scope.launch {
-                                    val barcodeDao = db.userDao()
-                                    barcodeDao.insertAll(barcode)
-                                }
-
-
-                            }
                         }
                     }
                 }

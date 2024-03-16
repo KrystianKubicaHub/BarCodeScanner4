@@ -118,6 +118,7 @@ open class CheckBarcode : ComponentActivity() {
                 )
             }
         ){ innerPadding ->
+            val fakevalue = innerPadding
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
