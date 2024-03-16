@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,13 +46,15 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit){
 
 
+
                 val db = Room.databaseBuilder(
                     applicationContext,
                     AppDatabase::class.java, "barcodes-database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
 
                 val barcodeDao = db.userDao()
                 val codes: List<Barcode> = barcodeDao.getAll()
+
                 RAM_Database.barcodes_data.addAll(codes)
 
                 for(c in codes){
@@ -132,7 +137,7 @@ fun getValueFromFirebase(index : Int, context: Context, scope: CoroutineScope){
                     val db = Room.databaseBuilder(
                         context,
                         AppDatabase::class.java, "barcodes-database"
-                    ).build()
+                    ).fallbackToDestructiveMigration().build()
 
 
                     scope.launch {
@@ -162,6 +167,8 @@ fun getValueFromFirebase(index : Int, context: Context, scope: CoroutineScope){
 fun Greeting(name: String? = null, modifier: Modifier = Modifier) {
     val mContext = LocalContext.current
 
+    val barcodesText = remember{ mutableStateOf("") }
+
     val modifier_button = Modifier.padding(horizontal = 40.dp, vertical = 15.dp)
     Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedButton(onClick = { mContext.startActivity(Intent(mContext, AddNewBarcode::class.java)) },
@@ -172,6 +179,10 @@ fun Greeting(name: String? = null, modifier: Modifier = Modifier) {
             modifier = modifier_button){
             Text(text = "Check barcode")
         }
+        OutlinedButton(onClick = {barcodesText.value = RAM_Database.list_of_barcodes.toString()}, modifier = modifier_button){
+            Text(text = "Show Database")
+        }
+        OutlinedTextField(value = barcodesText.value , onValueChange = {}, modifier = modifier_button)
     }
 
 }

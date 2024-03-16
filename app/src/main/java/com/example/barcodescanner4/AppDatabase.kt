@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @TypeConverters(Converter::class)
-@Database(entities = [Barcode::class], version = 1)
+@Database(entities = [Barcode::class], version = 11)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): BarcodeDao
 }
