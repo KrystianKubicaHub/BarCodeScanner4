@@ -208,9 +208,13 @@ class EvaluateTheNewCode(){
         }
     }
 
-    fun getBarcodeFromRAM(): Barcode {
-        val op = OpinionOnThrowingAway(descripton = "", kind_of_basket = "")
-        val my_list = listOf(op)
-        return Barcode(0,"","","",my_list,true)
+    fun getBarcodeFromRAM(): Barcode?{
+
+        for(i in RAM_Database.barcodes_data){
+            if(i.code == code){
+                return i
+            }
+        }
+        return null
     }
 }

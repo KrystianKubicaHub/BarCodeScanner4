@@ -105,7 +105,9 @@ open class CheckBarcode : ComponentActivity() {
                         val Evaluate = EvaluateTheNewCode()
                         error.value = Evaluate.barcodeIsOk(code.value)
                         if(Evaluate.check_if_code_in_registry()){
-                            val barcode: Barcode = Evaluate.getBarcodeFromRAM()
+                            val barcode: Barcode? = Evaluate.getBarcodeFromRAM()
+                            error.value = barcode!!.opinion_on_throwing_away.toString()
+
                         }else{
                             error.value = "Unfortunately, this barcode is not in our registry"
                         }
