@@ -116,7 +116,9 @@ open class CheckBarcode : ComponentActivity() {
                     text = { Text(text = "Check this barcode") },
                     containerColor = color_yellow,
                     contentColor = color_white,
-                    modifier = Modifier.padding(10.dp).size(160.dp,55.dp)
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .size(160.dp, 55.dp)
                 )
             }
         ){ innerPadding ->
@@ -151,6 +153,8 @@ open class CheckBarcode : ComponentActivity() {
                         )
                     )
                 }
+
+                Database.ExecuteTimeView()
 
             }
         }

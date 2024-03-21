@@ -513,7 +513,7 @@ open class AddNewBarcode : ComponentActivity() {
     }
 
 
-    private suspend fun onConfirm(
+    private fun onConfirm(
         code: String,
         manufacturer: String,
         product_name: String,
@@ -554,11 +554,7 @@ open class AddNewBarcode : ComponentActivity() {
                             barcode.manufacturer = manufacturer
                             barcode.product_name = product_name
 
-                            val database =
-                                Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
-                            val myRef = database.getReference("barcodes").child(RAM_Database.list_of_barcodes.size.toString())
-
-                            myRef.setValue(barcode)
+                            Database.pushToFireBase(barcode)
                         } else {
                             val users_opinion = OpinionOnThrowingAway(
                                 kind_of_basket = "",
@@ -573,11 +569,7 @@ open class AddNewBarcode : ComponentActivity() {
                             barcode.manufacturer = manufacturer
                             barcode.product_name = product_name
 
-                            val database =
-                                Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
-                            val myRef = database.getReference("barcodes").child(RAM_Database.list_of_barcodes.size.toString())
-
-                            myRef.setValue(barcode)
+                            Database.pushToFireBase(barcode)
 
                         }
                     }
