@@ -1,6 +1,7 @@
 package com.example.barcodescanner4
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -50,11 +51,12 @@ object Database {
                 }
                 scopeSQL.join()
 
+
+
                 val scopeFireBase : Job = launch(context = Dispatchers.Default){
                     loadDataFromFireBase(RAM_Database.list_of_barcodes.size, context)
                 }
                 scopeFireBase.join()
-                my_time = -100
 
             }
     }
@@ -68,7 +70,7 @@ object Database {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun loadDataFromFireBase(index: Int, context: Context) {
+    private fun loadDataFromFireBase(index: Int, context: Context){
         val database =
             Firebase.database("https://barcodescanner4-cbe9f-default-rtdb.europe-west1.firebasedatabase.app/")
         val myRef = database.getReference("barcodes").child(index.toString())
@@ -125,6 +127,10 @@ object Database {
                         RAM_Database.barcodes_data.add(newBarcode)
                         RAM_Database.list_of_barcodes.add(newBarcode.code)
 
+
+
+                        Log.e("Piastów4", newBarcode.opinion_on_throwing_away.toString())
+
                         val db = Room.databaseBuilder(
                             context,
                             AppDatabase::class.java, "barcodes-database"
@@ -132,12 +138,14 @@ object Database {
 
                         GlobalScope.launch {
                             val barcodeDao = db.userDao()
+
                             barcodeDao.insertAll(newBarcode)
+
+
                             loadDataFromFireBase(index+1, context)
                         }
                     }
                 }
-                Toast.makeText(context, "new data has just been received", Toast.LENGTH_LONG).show()
             }
 
 
@@ -163,6 +171,8 @@ object Database {
         for(c in codes){
             RAM_Database.list_of_barcodes.add(c.code)
         }
+
+
     }
 
 

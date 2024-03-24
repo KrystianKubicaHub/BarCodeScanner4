@@ -38,8 +38,8 @@ class BarcodeAnalyzer(
                     barcode?.takeIf { it.isNotEmpty() }
                         ?.mapNotNull { it.rawValue }
                         ?.joinToString(",")
-                        ?.let { input_code.value = it; scanner.close(); analyzerType = AnalyzerType.UNDEFINED;
-                            imageProxy.close(); camera_active.value = false }
+                        ?.let { input_code.value = it; analyzerType = AnalyzerType.UNDEFINED
+                            camera_active.value = false }
                 }.addOnCompleteListener {
                     imageProxy.close()
                 }

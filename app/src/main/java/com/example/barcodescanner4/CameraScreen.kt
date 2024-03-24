@@ -42,7 +42,6 @@ fun CameraScreen(
             imageAnalysis.setAnalyzer(
                 ContextCompat.getMainExecutor(context),
                     BarcodeAnalyzer(context, input_code, analyzerType, camera_active)
-
             )
 
             runCatching {

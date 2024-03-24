@@ -38,7 +38,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 
-open class CheckBarcode : ComponentActivity() {
+class CheckBarcode : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +54,8 @@ open class CheckBarcode : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (PermissionCameraState.status.isGranted) {
-                        if (!camera_active.value) {
+                    if (PermissionCameraState.status.isGranted){
+                        if (!camera_active.value){
                             Greeting2(camera_active, code)
                         } else {
                             CameraScreen(
@@ -81,10 +81,10 @@ open class CheckBarcode : ComponentActivity() {
     @Composable
     fun Greeting2(camera: MutableState<Boolean>, code: MutableState<String>) {
 
-        val color_white = Color(255,255,255)
-        val color_grey = Color(74,76,92)
-        val color_yellow = Color(216,160,86)
-        val color_black = Color(51,60,75)
+        val color_white = Color(255, 255, 255)
+        val color_grey = Color(74, 76, 92)
+        val color_yellow = Color(216, 160, 86)
+        val color_black = Color(51, 60, 75)
         val inputs_colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = color_yellow,
             unfocusedBorderColor = color_grey,
@@ -94,8 +94,7 @@ open class CheckBarcode : ComponentActivity() {
         )
 
         val modifier_button = Modifier.padding(vertical = 15.dp)
-        val context = LocalContext.current
-        val error = remember{ mutableStateOf("") }
+        val error = remember { mutableStateOf("") }
 
         Scaffold(
             floatingActionButtonPosition = FabPosition.Center,
@@ -104,15 +103,15 @@ open class CheckBarcode : ComponentActivity() {
                     onClick = {
                         val Evaluate = EvaluateTheNewCode()
                         error.value = Evaluate.barcodeIsOk(code.value)
-                        if(Evaluate.check_if_code_in_registry()){
+                        if (Evaluate.check_if_code_in_registry()) {
                             val barcode: Barcode? = Evaluate.getBarcodeFromRAM()
                             error.value = barcode!!.opinion_on_throwing_away.toString()
 
-                        }else{
+                        } else {
                             error.value = "Unfortunately, this barcode is not in our registry"
                         }
-                              },
-                    icon = { Icon(Icons.Filled.Check, "Check this barcode in the database") },
+                    },
+                    icon = { Icon(Icons.Filled.Check, "Check this barcode in the database")},
                     text = { Text(text = "Check this barcode") },
                     containerColor = color_yellow,
                     contentColor = color_white,
@@ -121,14 +120,14 @@ open class CheckBarcode : ComponentActivity() {
                         .size(160.dp, 55.dp)
                 )
             }
-        ){ innerPadding ->
+        ) { innerPadding ->
             val fakevalue = innerPadding
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
             ) {
-                OutlinedButton(modifier = modifier_button, onClick = {camera.value = true}) {
+                OutlinedButton(modifier = modifier_button, onClick = { camera.value = true}) {
                     Text(text = "Scan Barcode")
                 }
                 OutlinedTextField(
@@ -141,7 +140,7 @@ open class CheckBarcode : ComponentActivity() {
                     colors = inputs_colors
 
                 )
-                if(error.value != ""){
+                if (error.value != "") {
                     OutlinedTextField(
                         value = error.value,
                         onValueChange = {},
@@ -153,17 +152,8 @@ open class CheckBarcode : ComponentActivity() {
                         )
                     )
                 }
-
-                Database.ExecuteTimeView()
-
             }
         }
-
-    }
-
-    private fun onClick(code: String): () -> Unit {
-
-        return ({1+1})
     }
 }
 
